@@ -7,21 +7,26 @@ import twitter4j.TwitterFactory;
 import twitter4j.auth.AccessToken;
 import twitter4j.auth.RequestToken;
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.webkit.CookieManager;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.ProgressBar;
+
 
 public class Login {
 
@@ -38,6 +43,79 @@ public class Login {
 
     private static final String OAUTH_VERIFIER = "oauth_verifier";
 
+    private static final int REQUEST_OAUTH = 0;
+
+    public static class LoginList extends Fragment implements OnClickListener {
+
+        boolean mDualPane;
+
+        @Override
+        public void onActivityCreated(Bundle savedInstanceState) {
+            super.onActivityCreated(savedInstanceState);
+            View detailsFrame = getActivity().findViewById(R.id.details);
+            mDualPane = detailsFrame != null && detailsFrame.getVisibility() == View.VISIBLE;
+        }
+
+        @Override
+        public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                Bundle savedInstanceState) {
+
+            View logins = inflater.inflate(R.layout.logins, container, false);
+
+            logins.findViewById(R.id.from_webview).setOnClickListener(this);
+            logins.findViewById(R.id.from_browser).setOnClickListener(this);
+            logins.findViewById(R.id.from_pin_code).setOnClickListener(this);
+
+            return logins;
+        }
+
+        @Override
+        public void onClick(View v) {
+
+            if (mDualPane) {
+                Fragment details = getFragmentManager().findFragmentById(R.id.details);
+                switch (v.getId()) {
+                    case R.id.from_webview:
+                        details = new FromWebView();
+
+                        Bundle extras = new Bundle();
+                        extras.putString(Login.CALLBACK, ADOT4J4A.OAUTH_CALLBACK_URL);
+                        extras.putString(Login.CONSUMER_KEY, ADOT4J4A.CONSUMER_KEY);
+                        extras.putString(Login.CONSUMER_SECRET, ADOT4J4A.CONSUMER_SECRET);
+
+                        details.setArguments(extras);
+
+                        FragmentTransaction ft = getFragmentManager().beginTransaction();
+                        ft.replace(R.id.details, details);
+                        ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+                        ft.addToBackStack(null);
+                        ft.commit();
+                        break;
+                    case R.id.from_browser:
+                    case R.id.from_pin_code:
+                    default:
+                        return;
+                }
+            } else {
+                Intent intent = new Intent(getActivity(), DetailsActivity.class);
+                switch (v.getId()) {
+                    case R.id.from_webview:
+                        intent.setAction(DetailsActivity.ACTION_LOGIN_FROM_WEBVIEW);
+                        break;
+                    case R.id.from_browser:
+                    case R.id.from_pin_code:
+                    default:
+                        return;
+                }
+
+                intent.putExtra(Login.CALLBACK, ADOT4J4A.OAUTH_CALLBACK_URL)
+                        .putExtra(Login.CONSUMER_KEY, ADOT4J4A.CONSUMER_KEY)
+                        .putExtra(Login.CONSUMER_SECRET, ADOT4J4A.CONSUMER_SECRET);
+                startActivityForResult(intent, REQUEST_OAUTH);
+            }
+        }
+    }
+
     /**
      * WebView Ç≈ÉçÉOÉCÉì
      */
@@ -47,6 +125,9 @@ public class Login {
         private String mCallback;
         private Twitter mTwitter;
 
+        private ProgressBar mBar;
+        private ProgressBar mCircle;
+
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                 Bundle savedInstanceState) {
@@ -54,12 +135,19 @@ public class Login {
             FragmentActivity activity = getActivity();
             activity.setResult(Activity.RESULT_CANCELED);
 
-            mWebView = new WebView(activity);
+            View view = inflater.inflate(R.layout.login_from_webview, container, false);
+
+            mWebView = (WebView) view.findViewById(R.id.webView);
             WebSettings webSettings = mWebView.getSettings();
             webSettings.setSavePassword(false);
+            mWebView.setVerticalScrollbarOverlay(true);
             mWebView.setWebChromeClient(mWebChromeClient);
             mWebView.setWebViewClient(mWebViewClient);
-            return mWebView;
+
+            mBar = (ProgressBar) view.findViewById(R.id.progressBar);
+            mCircle = (ProgressBar) view.findViewById(R.id.progressCircle);
+
+            return view;
         }
 
         @Override
@@ -95,7 +183,6 @@ public class Login {
             @Override
             protected void onPreExecute() {
                 super.onPreExecute();
-                getActivity().setProgressBarIndeterminateVisibility(true);
             }
 
             @Override
@@ -116,12 +203,10 @@ public class Login {
             @Override
             protected void onPostExecute(String result) {
                 super.onPostExecute(result);
-                FragmentActivity activity = getActivity();
-                activity.setProgressBarIndeterminateVisibility(false);
                 if (result != null) {
                     mWebView.loadUrl(result);
                 } else {
-                    activity.finish();
+                    getActivity().finish();
                 }
             }
 
@@ -132,7 +217,15 @@ public class Login {
             @Override
             public void onProgressChanged(WebView view, int newProgress) {
                 super.onProgressChanged(view, newProgress);
-                getActivity().setProgress(newProgress * 100);
+                mBar.setProgress(newProgress * (mBar.getWidth() / mBar.getMax()));
+
+                if (newProgress < 100) {
+                    mBar.setVisibility(View.VISIBLE);
+                    mCircle.setVisibility(View.VISIBLE);
+                } else {
+                    mBar.setVisibility(View.INVISIBLE);
+                    mCircle.setVisibility(View.INVISIBLE);
+                }
             }
 
         };
@@ -159,7 +252,6 @@ public class Login {
                 super.onPageStarted(view, url, favicon);
                 shouldOverrideUrlLoading(view, url);
             }
-
         };
 
         // å„èàóù
@@ -168,7 +260,6 @@ public class Login {
             @Override
             protected void onPreExecute() {
                 super.onPreExecute();
-                getActivity().setProgressBarIndeterminateVisibility(true);
             }
 
             @Override
@@ -188,7 +279,6 @@ public class Login {
             @Override
             protected void onPostExecute(AccessToken result) {
                 super.onPostExecute(result);
-                getActivity().setProgressBarIndeterminateVisibility(false);
                 if (result != null) {
 
                     ADOT4J4A adot4j4a = (ADOT4J4A) getActivity().getApplication();

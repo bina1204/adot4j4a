@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="titles">
+        <item>Login</item>
+        <item>Timeline</item>
+        <item>Tweet</item>
+        <item>Follow</item>
+        <item>Account</item>
+        <item>Direct Message</item>
+        <item>List</item>
+        <item>Saved Searches</item>
+        <item>Treands</item>
+        <item>Geo</item>
+        <item>Other</item>
+    </string-array>
+
+</resources>

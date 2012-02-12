@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="titles">
+        <item>ログイン</item>
+        <item>タイムライン</item>
+        <item>ツイート</item>
+        <item>フォロー</item>
+        <item>アカウント</item>
+        <item>ダイレクトメッセージ</item>
+        <item>リスト</item>
+        <item>保存した検索</item>
+        <item>トレンド</item>
+        <item>地理</item>
+        <item>その他</item>
+    </string-array>
+
+</resources>

@@ -3,7 +3,7 @@
 
     <string name="hello">Hello World, ADOT4J4AActivity!</string>
     <string name="app_name">ADOT4J4A</string>
-    <string name="from_keycode">From KeyCode</string>
+    <string name="from_pin_code">From PIN Code</string>
     <string name="from_browser">From Browser</string>
     <string name="from_webview">From WebView</string>
 

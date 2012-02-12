@@ -2,68 +2,54 @@
 package com.gsbina.android.adot4j4a;
 
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.app.ListFragment;
+import android.view.LayoutInflater;
 import android.view.View;
-import android.view.Window;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-import com.gsbina.android.adot4j4a.Login.FromWebView;
+import com.gsbina.android.adot4j4a.Login.LoginList;
 
 public class MainActivity extends FragmentActivity {
-    /** Called when the activity is first created. */
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        requestWindowFeature(Window.FEATURE_PROGRESS);
-        requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
-
         setContentView(R.layout.main);
     }
 
-    public static class DetailsActivity extends FragmentActivity {
-
-        @Override
-        protected void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-
-            if (getResources().getConfiguration().orientation
-                    == Configuration.ORIENTATION_LANDSCAPE) {
-                // If the screen is now in landscape mode, we can show the
-                // dialog in-line with the list so we don't need this activity.
-                finish();
-                return;
-            }
-
-            if (savedInstanceState == null) {
-                // During initial setup, plug in the details fragment.
-                FromWebView details = new FromWebView();
-                details.setArguments(getIntent().getExtras());
-                getSupportFragmentManager().beginTransaction().add(
-                        android.R.id.content, details).commit();
-            }
-        }
-    }
-
-    private static final int REQUEST_OAUTH = 0;
-
-    public static class TitlesFragment extends ListFragment {
+    public static class TitlesFragment extends Fragment implements OnItemClickListener {
         boolean mDualPane;
         int mCurCheckPosition = 0;
+
+        private ListView mTitleList;
+
+        @Override
+        public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                Bundle savedInstanceState) {
+
+            View layout = inflater.inflate(R.layout.title_list, container, false);
+            mTitleList = (ListView) layout.findViewById(R.id.title_list);
+            mTitleList.setOnItemClickListener(this);
+
+            return layout;
+        }
 
         @Override
         public void onActivityCreated(Bundle savedInstanceState) {
             super.onActivityCreated(savedInstanceState);
 
             // Populate list with our static array of titles.
-            setListAdapter(new ArrayAdapter<String>(getActivity(),
+            mTitleList.setAdapter(new ArrayAdapter<String>(getActivity(),
                     R.layout.simple_list_item_checkable_1,
-                    android.R.id.text1, Twitter4JApis.TITELS));
+                    android.R.id.text1, getResources().getStringArray(R.array.titles)));
 
             // Check to see if we have a frame in which to embed the details
             // fragment directly in the containing UI.
@@ -78,7 +64,7 @@ public class MainActivity extends FragmentActivity {
             if (mDualPane) {
                 // In dual-pane mode, the list view highlights the selected
                 // item.
-                getListView().setChoiceMode(ListView.CHOICE_MODE_SINGLE);
+                mTitleList.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
                 // Make sure our UI is in the correct state.
                 showDetails(mCurCheckPosition);
             }
@@ -88,11 +74,6 @@ public class MainActivity extends FragmentActivity {
         public void onSaveInstanceState(Bundle outState) {
             super.onSaveInstanceState(outState);
             outState.putInt("curChoice", mCurCheckPosition);
-        }
-
-        @Override
-        public void onListItemClick(ListView l, View v, int position, long id) {
-            showDetails(position);
         }
 
         /**
@@ -106,50 +87,45 @@ public class MainActivity extends FragmentActivity {
             if (mDualPane) {
                 // We can display everything in-place with fragments, so update
                 // the list to highlight the selected item and show the data.
-                getListView().setItemChecked(index, true);
+                mTitleList.setItemChecked(index, true);
 
-                switch (index) {
-                    case 0:
+                Fragment details = getFragmentManager().findFragmentById(
+                        R.id.details);
+                if (details == null) {
 
-                        // Check what fragment is currently shown, replace if
-                        // needed.
-                        FromWebView details = (FromWebView) getFragmentManager().findFragmentById(
-                                R.id.details);
-                        if (details == null) {
-                            // Make new fragment to show this selection.
-                            details = new FromWebView();
+                    switch (index) {
+                        case Twitter4JApis.LOGIN:
+                            details = new LoginList();
+                            break;
+                        case Twitter4JApis.TIMELINE:
+                        default:
+                            return;
+                    }
 
-                            Bundle extras = new Bundle();
-                            extras.putString(Login.CALLBACK, ADOT4J4A.OAUTH_CALLBACK_URL);
-                            extras.putString(Login.CONSUMER_KEY, ADOT4J4A.CONSUMER_KEY);
-                            extras.putString(Login.CONSUMER_SECRET, ADOT4J4A.CONSUMER_SECRET);
-
-                            details.setArguments(extras);
-
-                            // Execute a transaction, replacing any existing
-                            // fragment
-                            // with this one inside the frame.
-                            FragmentTransaction ft = getFragmentManager().beginTransaction();
-                            ft.replace(R.id.details, details);
-                            ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-                            ft.commit();
-                        }
-
-                        break;
-
-                    default:
-                        break;
+                    FragmentTransaction ft = getFragmentManager().beginTransaction();
+                    ft.add(R.id.details, details);
+                    ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+                    ft.commit();
                 }
 
             } else {
-                Intent intent = new Intent()
-                        .setClass(getActivity(), DetailsActivity.class)
-                        .putExtra(Login.CALLBACK, ADOT4J4A.OAUTH_CALLBACK_URL)
-                        .putExtra(Login.CONSUMER_KEY, ADOT4J4A.CONSUMER_KEY)
-                        .putExtra(Login.CONSUMER_SECRET, ADOT4J4A.CONSUMER_SECRET);
-                startActivityForResult(intent, REQUEST_OAUTH);
+                Intent intent = new Intent(getActivity(), DetailsActivity.class);
+                switch (index) {
+                    case Twitter4JApis.LOGIN:
+                        intent.setAction(DetailsActivity.ACTION_LOGIN);
+                        break;
+                    case Twitter4JApis.TIMELINE:
+                    default:
+                        return;
+                }
+
                 startActivity(intent);
             }
+        }
+
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            showDetails(position);
         }
     }
 }
