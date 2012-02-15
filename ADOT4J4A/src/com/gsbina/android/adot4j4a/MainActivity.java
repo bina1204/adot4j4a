@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +16,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import com.gsbina.android.adot4j4a.Login.LoginList;
+import com.gsbina.android.adot4j4a.Timeline.Home;
 
 public class MainActivity extends FragmentActivity {
 
@@ -82,6 +84,7 @@ public class MainActivity extends FragmentActivity {
          * new activity in which it is displayed.
          */
         void showDetails(int index) {
+            Log.d("MAIN", "index : " + index);
             mCurCheckPosition = index;
 
             if (mDualPane) {
@@ -98,15 +101,17 @@ public class MainActivity extends FragmentActivity {
                             details = new LoginList();
                             break;
                         case Twitter4JApis.TIMELINE:
+                            details = new Home();
+                            break;
                         default:
                             return;
                     }
-
-                    FragmentTransaction ft = getFragmentManager().beginTransaction();
-                    ft.add(R.id.details, details);
-                    ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-                    ft.commit();
                 }
+
+                FragmentTransaction ft = getFragmentManager().beginTransaction();
+                ft.replace(R.id.details, details);
+                ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+                ft.commit();
 
             } else {
                 Intent intent = new Intent(getActivity(), DetailsActivity.class);
@@ -115,6 +120,8 @@ public class MainActivity extends FragmentActivity {
                         intent.setAction(DetailsActivity.ACTION_LOGIN);
                         break;
                     case Twitter4JApis.TIMELINE:
+                        intent.setAction(DetailsActivity.ACTION_TIMELINE_PUBLIC);
+                        break;
                     default:
                         return;
                 }

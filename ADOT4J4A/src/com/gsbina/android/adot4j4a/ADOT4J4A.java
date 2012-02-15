@@ -10,8 +10,8 @@ import android.text.TextUtils;
 
 public class ADOT4J4A extends Application {
 
-    public static final String CONSUMER_KEY = "";
-    public static final String CONSUMER_SECRET = "";
+    public static final String CONSUMER_KEY = "eF8u83Xg3EBs1rS9HNjWFQ";
+    public static final String CONSUMER_SECRET = "B8BYkgLCb6VBByHpibYHq25dd7WF2kSCZau19eIxA";
 
     public static final String OAUTH_CALLBACK_SCHEME = "http";
     public static final String OAUTH_CALLBACK_HOST = "gsbina.com/adot4j4a/callback";
