@@ -18,15 +18,12 @@ import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.webkit.CookieManager;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.ProgressBar;
-
 
 public class Login {
 
@@ -45,74 +42,63 @@ public class Login {
 
     private static final int REQUEST_OAUTH = 0;
 
-    public static class LoginList extends Fragment implements OnClickListener {
+    public static final int FROM_WEB_VIEW = 0;
+    public static final int FROM_BROWSER = 1;
+    public static final int FROM_PIN_CODE = 2;
 
-        boolean mDualPane;
+    public static class SelectMenu extends DetailsList {
 
         @Override
-        public void onActivityCreated(Bundle savedInstanceState) {
-            super.onActivityCreated(savedInstanceState);
-            View detailsFrame = getActivity().findViewById(R.id.details);
-            mDualPane = detailsFrame != null && detailsFrame.getVisibility() == View.VISIBLE;
+        protected String[] getTitles() {
+            return getResources().getStringArray(R.array.titles_login);
         }
 
         @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                Bundle savedInstanceState) {
-
-            View logins = inflater.inflate(R.layout.logins, container, false);
-
-            logins.findViewById(R.id.from_webview).setOnClickListener(this);
-            logins.findViewById(R.id.from_browser).setOnClickListener(this);
-            logins.findViewById(R.id.from_pin_code).setOnClickListener(this);
-
-            return logins;
+        protected void replaceFragment(Fragment details) {
+            FragmentTransaction ft = getFragmentManager().beginTransaction();
+            ft.replace(R.id.details, details);
+            ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+            ft.addToBackStack(null);
+            ft.commit();
         }
 
         @Override
-        public void onClick(View v) {
+        protected Fragment getDetailsFragment(int index) {
+            switch (index) {
+                case FROM_WEB_VIEW:
+                    Fragment details = new Login.FromWebView();
 
-            if (mDualPane) {
-                Fragment details = getFragmentManager().findFragmentById(R.id.details);
-                switch (v.getId()) {
-                    case R.id.from_webview:
-                        details = new FromWebView();
+                    Bundle extras = new Bundle();
+                    extras.putString(Login.CALLBACK, ADOT4J4A.OAUTH_CALLBACK_URL);
+                    extras.putString(Login.CONSUMER_KEY, ADOT4J4A.CONSUMER_KEY);
+                    extras.putString(Login.CONSUMER_SECRET, ADOT4J4A.CONSUMER_SECRET);
 
-                        Bundle extras = new Bundle();
-                        extras.putString(Login.CALLBACK, ADOT4J4A.OAUTH_CALLBACK_URL);
-                        extras.putString(Login.CONSUMER_KEY, ADOT4J4A.CONSUMER_KEY);
-                        extras.putString(Login.CONSUMER_SECRET, ADOT4J4A.CONSUMER_SECRET);
-
-                        details.setArguments(extras);
-
-                        FragmentTransaction ft = getFragmentManager().beginTransaction();
-                        ft.replace(R.id.details, details);
-                        ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-                        ft.addToBackStack(null);
-                        ft.commit();
-                        break;
-                    case R.id.from_browser:
-                    case R.id.from_pin_code:
-                    default:
-                        return;
-                }
-            } else {
-                Intent intent = new Intent(getActivity(), DetailsActivity.class);
-                switch (v.getId()) {
-                    case R.id.from_webview:
-                        intent.setAction(DetailsActivity.ACTION_LOGIN_FROM_WEBVIEW);
-                        break;
-                    case R.id.from_browser:
-                    case R.id.from_pin_code:
-                    default:
-                        return;
-                }
-
-                intent.putExtra(Login.CALLBACK, ADOT4J4A.OAUTH_CALLBACK_URL)
-                        .putExtra(Login.CONSUMER_KEY, ADOT4J4A.CONSUMER_KEY)
-                        .putExtra(Login.CONSUMER_SECRET, ADOT4J4A.CONSUMER_SECRET);
-                startActivityForResult(intent, REQUEST_OAUTH);
+                    details.setArguments(extras);
+                    return details;
+                case FROM_BROWSER:
+                case FROM_PIN_CODE:
             }
+            return null;
+        }
+
+        @Override
+        protected void startDetailsIntent(int index) {
+            Intent intent = new Intent(getActivity(), DetailsActivity.class);
+            switch (index) {
+                case FROM_WEB_VIEW:
+                    intent.setAction(DetailsActivity.ACTION_LOGIN_FROM_WEBVIEW);
+                    break;
+                case FROM_BROWSER:
+                case FROM_PIN_CODE:
+                default:
+                    return;
+            }
+
+            intent.putExtra(Login.CALLBACK, ADOT4J4A.OAUTH_CALLBACK_URL)
+                    .putExtra(Login.CONSUMER_KEY, ADOT4J4A.CONSUMER_KEY)
+                    .putExtra(Login.CONSUMER_SECRET, ADOT4J4A.CONSUMER_SECRET);
+
+            startActivityForResult(intent, REQUEST_OAUTH);
         }
     }
 
@@ -125,8 +111,8 @@ public class Login {
         private String mCallback;
         private Twitter mTwitter;
 
-        private ProgressBar mBar;
-        private ProgressBar mCircle;
+        // private ProgressBar mBar;
+        // private ProgressBar mCircle;
 
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -144,8 +130,8 @@ public class Login {
             mWebView.setWebChromeClient(mWebChromeClient);
             mWebView.setWebViewClient(mWebViewClient);
 
-            mBar = (ProgressBar) view.findViewById(R.id.progressBar);
-            mCircle = (ProgressBar) view.findViewById(R.id.progressCircle);
+            // mBar = (ProgressBar) view.findViewById(R.id.progressBar);
+            // mCircle = (ProgressBar) view.findViewById(R.id.progressCircle);
 
             return view;
         }
@@ -217,15 +203,16 @@ public class Login {
             @Override
             public void onProgressChanged(WebView view, int newProgress) {
                 super.onProgressChanged(view, newProgress);
-                mBar.setProgress(newProgress * (mBar.getWidth() / mBar.getMax()));
-
-                if (newProgress < 100) {
-                    mBar.setVisibility(View.VISIBLE);
-                    mCircle.setVisibility(View.VISIBLE);
-                } else {
-                    mBar.setVisibility(View.INVISIBLE);
-                    mCircle.setVisibility(View.INVISIBLE);
-                }
+                // mBar.setProgress(newProgress * (mBar.getWidth() /
+                // mBar.getMax()));
+                //
+                // if (newProgress < 100) {
+                // mBar.setVisibility(View.VISIBLE);
+                // mCircle.setVisibility(View.VISIBLE);
+                // } else {
+                // mBar.setVisibility(View.INVISIBLE);
+                // mCircle.setVisibility(View.INVISIBLE);
+                // }
             }
 
         };

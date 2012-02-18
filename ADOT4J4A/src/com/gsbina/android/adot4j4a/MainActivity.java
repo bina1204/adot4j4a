@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,9 +13,6 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-
-import com.gsbina.android.adot4j4a.Login.LoginList;
-import com.gsbina.android.adot4j4a.Timeline.Home;
 
 public class MainActivity extends FragmentActivity {
 
@@ -31,7 +27,7 @@ public class MainActivity extends FragmentActivity {
         boolean mDualPane;
         int mCurCheckPosition = 0;
 
-        private ListView mTitleList;
+        protected ListView mTitleList;
 
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -51,7 +47,7 @@ public class MainActivity extends FragmentActivity {
             // Populate list with our static array of titles.
             mTitleList.setAdapter(new ArrayAdapter<String>(getActivity(),
                     R.layout.simple_list_item_checkable_1,
-                    android.R.id.text1, getResources().getStringArray(R.array.titles)));
+                    android.R.id.text1, getTitles()));
 
             // Check to see if we have a frame in which to embed the details
             // fragment directly in the containing UI.
@@ -72,6 +68,10 @@ public class MainActivity extends FragmentActivity {
             }
         }
 
+        protected String[] getTitles() {
+            return getResources().getStringArray(R.array.titles);
+        }
+
         @Override
         public void onSaveInstanceState(Bundle outState) {
             super.onSaveInstanceState(outState);
@@ -84,50 +84,60 @@ public class MainActivity extends FragmentActivity {
          * new activity in which it is displayed.
          */
         void showDetails(int index) {
-            Log.d("MAIN", "index : " + index);
             mCurCheckPosition = index;
 
             if (mDualPane) {
-                // We can display everything in-place with fragments, so update
-                // the list to highlight the selected item and show the data.
                 mTitleList.setItemChecked(index, true);
 
-                Fragment details = getFragmentManager().findFragmentById(
-                        R.id.details);
-                if (details == null) {
+                Fragment details = getDetailsFragment(index);
 
-                    switch (index) {
-                        case Twitter4JApis.LOGIN:
-                            details = new LoginList();
-                            break;
-                        case Twitter4JApis.TIMELINE:
-                            details = new Home();
-                            break;
-                        default:
-                            return;
-                    }
+                if (details != null) {
+                    replaceFragment(details);
                 }
-
-                FragmentTransaction ft = getFragmentManager().beginTransaction();
-                ft.replace(R.id.details, details);
-                ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-                ft.commit();
 
             } else {
-                Intent intent = new Intent(getActivity(), DetailsActivity.class);
-                switch (index) {
-                    case Twitter4JApis.LOGIN:
-                        intent.setAction(DetailsActivity.ACTION_LOGIN);
-                        break;
-                    case Twitter4JApis.TIMELINE:
-                        intent.setAction(DetailsActivity.ACTION_TIMELINE_PUBLIC);
-                        break;
-                    default:
-                        return;
+                Intent intent = getDetailsIntent(index);
+                if (intent != null) {
+                    startActivity(intent);
                 }
-
-                startActivity(intent);
             }
+        }
+
+        protected void replaceFragment(Fragment details) {
+            FragmentTransaction ft = getFragmentManager().beginTransaction();
+            ft.replace(R.id.details, details);
+            ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+            ft.commit();
+        }
+
+        protected Intent getDetailsIntent(int index) {
+            Intent intent = new Intent(getActivity(), DetailsActivity.class);
+            switch (index) {
+                case Twitter4JApis.LOGIN:
+                    intent.setAction(DetailsActivity.ACTION_LOGIN);
+                    break;
+                case Twitter4JApis.TIMELINE:
+                    intent.setAction(DetailsActivity.ACTION_TIMELINE);
+                    break;
+                default:
+                    return null;
+            }
+            return intent;
+        }
+
+        protected Fragment getDetailsFragment(int index) {
+            Fragment details = null;
+            switch (index) {
+                case Twitter4JApis.LOGIN:
+                    details = new Login.SelectMenu();
+                    break;
+                case Twitter4JApis.TIMELINE:
+                    details = new Timeline.SelectMenu();
+                    break;
+                default:
+                    break;
+            }
+            return details;
         }
 
         @Override

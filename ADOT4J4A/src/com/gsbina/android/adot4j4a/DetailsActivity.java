@@ -6,11 +6,6 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 
-import com.gsbina.android.adot4j4a.Login.FromWebView;
-import com.gsbina.android.adot4j4a.Login.LoginList;
-import com.gsbina.android.adot4j4a.Timeline.Home;
-import com.gsbina.android.adot4j4a.Timeline.Public;
-
 public class DetailsActivity extends FragmentActivity {
 
     private static final String ACTION_PREFIX = "com.gsbina.android.adot4j4a.action.";
@@ -19,6 +14,15 @@ public class DetailsActivity extends FragmentActivity {
     public static final String ACTION_TIMELINE = ACTION_PREFIX + "TIMELINE";
     public static final String ACTION_TIMELINE_PUBLIC = ACTION_TIMELINE + "_PUBLIC";
     public static final String ACTION_TIMELINE_HOME = ACTION_TIMELINE + "_HOME";
+    public static final String ACTION_TIMELINE_USER = ACTION_TIMELINE + "_USER";
+    public static final String ACTION_TIMELINE_MENTIONS = ACTION_TIMELINE + "_MENTIONS";
+    public static final String ACTION_TIMELINE_RETWEET_BY_ME = ACTION_TIMELINE + "_RETWEET_BY_ME";
+    public static final String ACTION_TIMELINE_RETWEET_OF_ME = ACTION_TIMELINE + "_RETWEET_OF_ME";
+    public static final String ACTION_TIMELINE_RETWEET_TO_ME = ACTION_TIMELINE + "_RETWEET_TO_ME";
+    public static final String ACTION_TIMELINE_RETWEET_TO_USER = ACTION_TIMELINE
+            + "_RETWEET_TO_USER";
+    public static final String ACTION_TIMELINE_RETWEET_BY_USER = ACTION_TIMELINE
+            + "_RETWEET_BY_USER";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,8 +30,6 @@ public class DetailsActivity extends FragmentActivity {
 
         if (getResources().getConfiguration().orientation
                 == Configuration.ORIENTATION_LANDSCAPE) {
-            // If the screen is now in landscape mode, we can show the
-            // dialog in-line with the list so we don't need this activity.
             finish();
             return;
         }
@@ -37,16 +39,32 @@ public class DetailsActivity extends FragmentActivity {
             String action = getIntent().getAction();
             Fragment details = null;
             if (ACTION_LOGIN.equals(action)) {
-                details = new LoginList();
+                details = new Login.SelectMenu();
             } else if (ACTION_LOGIN_FROM_WEBVIEW.equals(action)) {
-                details = new FromWebView();
+                details = new Login.FromWebView();
             } else if (ACTION_TIMELINE.equals(action)) {
-                // TODO タイムライン選択
-                return;
+                details = new Timeline.SelectMenu();
             } else if (ACTION_TIMELINE_PUBLIC.equals(action)) {
-                details = new Public();
+                details = new Timeline.Public();
             } else if (ACTION_TIMELINE_HOME.equals(action)) {
-                details = new Home();
+                details = new Timeline.Home();
+            } else if (ACTION_TIMELINE_USER.equals(action)) {
+                details = new Timeline.User();
+            } else if (ACTION_TIMELINE_MENTIONS.equals(action)) {
+                details = new Timeline.Mentions();
+            } else if (ACTION_TIMELINE_RETWEET_BY_ME.equals(action)) {
+                details = new Timeline.RetweetByMe();
+            } else if (ACTION_TIMELINE_RETWEET_OF_ME.equals(action)) {
+                details = new Timeline.RetweetOfMe();
+            } else if (ACTION_TIMELINE_RETWEET_TO_ME.equals(action)) {
+                details = new Timeline.RetweetToMe();
+            } else if (ACTION_TIMELINE_RETWEET_TO_USER.equals(action)) {
+                details = new Timeline.RetweetToUser();
+            } else if (ACTION_TIMELINE_RETWEET_BY_USER.equals(action)) {
+                details = new Timeline.RetweetByUser();
+            } else {
+                finish();
+                return;
             }
             details.setArguments(getIntent().getExtras());
             getSupportFragmentManager().beginTransaction().add(

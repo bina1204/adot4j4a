@@ -2,8 +2,5 @@
 <resources>
 
     <string name="app_name">ADOT4J4A</string>
-    <string name="from_pin_code">PINコードでログイン</string>
-    <string name="from_browser">ブラウザでログイン</string>
-    <string name="from_webview">WebViewでログイン</string>
 
 </resources>
