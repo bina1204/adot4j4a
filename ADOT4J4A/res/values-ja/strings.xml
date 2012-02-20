@@ -2,5 +2,7 @@
 <resources>
 
     <string name="app_name">ADOT4J4A</string>
+    <string name="hint_update_status">いまどうしてる？</string>
+    <string name="tweet">ツイート</string>
 
 </resources>

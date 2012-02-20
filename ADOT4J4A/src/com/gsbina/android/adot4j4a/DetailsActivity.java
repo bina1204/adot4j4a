@@ -9,8 +9,10 @@ import android.support.v4.app.FragmentActivity;
 public class DetailsActivity extends FragmentActivity {
 
     private static final String ACTION_PREFIX = "com.gsbina.android.adot4j4a.action.";
+
     public static final String ACTION_LOGIN = ACTION_PREFIX + "LOGIN";
     public static final String ACTION_LOGIN_FROM_WEBVIEW = ACTION_LOGIN + "_FROM_WEBVIEW";
+
     public static final String ACTION_TIMELINE = ACTION_PREFIX + "TIMELINE";
     public static final String ACTION_TIMELINE_PUBLIC = ACTION_TIMELINE + "_PUBLIC";
     public static final String ACTION_TIMELINE_HOME = ACTION_TIMELINE + "_HOME";
@@ -24,13 +26,16 @@ public class DetailsActivity extends FragmentActivity {
     public static final String ACTION_TIMELINE_RETWEET_BY_USER = ACTION_TIMELINE
             + "_RETWEET_BY_USER";
 
+    public static final String ACTION_TWEET = ACTION_PREFIX + "TWEET";
+    public static final String ACTION_TWEET_SHOW = ACTION_TWEET + "_SHOW";
+    public static final String ACTION_TWEET_UPDATE = ACTION_TWEET + "_UPDATE";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         if (getResources().getConfiguration().orientation
                 == Configuration.ORIENTATION_LANDSCAPE) {
-            finish();
             return;
         }
 
@@ -62,6 +67,10 @@ public class DetailsActivity extends FragmentActivity {
                 details = new Timeline.RetweetToUser();
             } else if (ACTION_TIMELINE_RETWEET_BY_USER.equals(action)) {
                 details = new Timeline.RetweetByUser();
+            } else if (ACTION_TWEET.equals(action)) {
+                details = new Tweet.SelectMenu();
+            } else if (ACTION_TWEET_UPDATE.equals(action)) {
+                details = new Tweet.UpdateStatus();
             } else {
                 finish();
                 return;

@@ -30,5 +30,17 @@
         <item>指定ユーザのフレンドのリツイート</item>
         <item>指定ユーザのリツイート</item>
     </string-array>
+    <string-array name="titles_tweet">
+        <item>ツイートを表示する</item>
+        <item>ツイートする</item>
+        <item>ツイートを削除する</item>
+        <item>リツイートする</item>
+        <item>リツイートを取得する</item>
+        <item>リツイートしたユーザを取得する</item>
+        <item>リツイートしたユーザのIDを取得する</item>
+        <item>お気に入り一覧を取得する</item>
+        <item>お気に入りを追加する</item>
+        <item>お気に入りを削除する</item>
+    </string-array>
 
 </resources>

@@ -28,6 +28,16 @@ public class Timeline {
     public static final int RETWEET_BY_USER_LINE = RETWEET_TO_USER_LINE + 1;
 
     public static class SelectMenu extends DetailsList {
+
+        private boolean mHasAccount = false;
+
+        @Override
+        public void onResume() {
+            ADOT4J4A adot4j4a = (ADOT4J4A) getActivity().getApplicationContext();
+            mHasAccount = adot4j4a.hasToken();
+            super.onResume();
+        }
+
         @Override
         protected String[] getTitles() {
             return getResources().getStringArray(R.array.titles_timeline);
@@ -44,7 +54,6 @@ public class Timeline {
 
         @Override
         protected Fragment getDetailsFragment(int index) {
-            // TODO デュアルペインのタイムライン
             switch (index) {
                 case PUBLIC_LINE:
                     return new Timeline.Public();
@@ -70,7 +79,6 @@ public class Timeline {
 
         @Override
         protected void startDetailsIntent(int index) {
-            // TODO シングルペインのタイムライン
             Intent intent = new Intent(getActivity(), DetailsActivity.class);
             switch (index) {
                 case PUBLIC_LINE:

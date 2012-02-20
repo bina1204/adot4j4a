@@ -19,7 +19,6 @@ public class MainActivity extends FragmentActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.main);
     }
 
@@ -119,6 +118,9 @@ public class MainActivity extends FragmentActivity {
                 case Twitter4JApis.TIMELINE:
                     intent.setAction(DetailsActivity.ACTION_TIMELINE);
                     break;
+                case Twitter4JApis.TWEET:
+                    intent.setAction(DetailsActivity.ACTION_TWEET);
+                    break;
                 default:
                     return null;
             }
@@ -133,6 +135,9 @@ public class MainActivity extends FragmentActivity {
                     break;
                 case Twitter4JApis.TIMELINE:
                     details = new Timeline.SelectMenu();
+                    break;
+                case Twitter4JApis.TWEET:
+                    details = new Tweet.SelectMenu();
                     break;
                 default:
                     break;

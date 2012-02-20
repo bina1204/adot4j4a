@@ -24,11 +24,23 @@
         <item>Home</item>
         <item>User</item>
         <item>Mentions</item>
-        <item>Retweet By Me</item>
-        <item>Retweet To Me</item>
-        <item>Retweet Of Me</item>
-        <item>Retweet To User</item>
-        <item>Retweet By User</item>
+        <item>Retweeted By Me</item>
+        <item>Retweeted To Me</item>
+        <item>Retweeted Of Me</item>
+        <item>Retweeted To User</item>
+        <item>Retweeted By User</item>
+    </string-array>
+    <string-array name="titles_tweet">
+        <item>Show</item>
+        <item>Update</item>
+        <item>Destroy</item>
+        <item>Retweet</item>
+        <item>Get Retweets</item>
+        <item>Get Retweeted By</item>
+        <item>Get Retweeted By IDs</item>
+        <item>Favorites</item>
+        <item>Create Favorite</item>
+        <item>Destroy Favorite</item>
     </string-array>
 
 </resources>
