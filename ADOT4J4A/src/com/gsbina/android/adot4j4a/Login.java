@@ -27,6 +27,9 @@ import android.webkit.WebViewClient;
 
 public class Login {
 
+    public static final String ACTION_LOGIN = DetailsActivity.ACTION_PREFIX + "LOGIN";
+    public static final String ACTION_LOGIN_FROM_WEBVIEW = ACTION_LOGIN + "_FROM_WEBVIEW";
+
     // Activity開始時のインテントパラメータ
     public static final String CALLBACK = "callback";
     public static final String CONSUMER_KEY = "consumer_key";
@@ -43,8 +46,8 @@ public class Login {
     private static final int REQUEST_OAUTH = 0;
 
     public static final int FROM_WEB_VIEW = 0;
-    public static final int FROM_BROWSER = 1;
-    public static final int FROM_PIN_CODE = 2;
+    public static final int FROM_BROWSER = FROM_WEB_VIEW + 1;
+    public static final int FROM_PIN_CODE = FROM_BROWSER + 1;
 
     public static class SelectMenu extends DetailsList {
 
@@ -86,7 +89,7 @@ public class Login {
             Intent intent = new Intent(getActivity(), DetailsActivity.class);
             switch (index) {
                 case FROM_WEB_VIEW:
-                    intent.setAction(DetailsActivity.ACTION_LOGIN_FROM_WEBVIEW);
+                    intent.setAction(Login.ACTION_LOGIN_FROM_WEBVIEW);
                     break;
                 case FROM_BROWSER:
                 case FROM_PIN_CODE:

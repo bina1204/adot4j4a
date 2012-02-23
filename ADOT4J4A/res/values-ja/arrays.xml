@@ -16,8 +16,8 @@
     </string-array>
     <string-array name="titles_login">
         <item>WebViewでログイン</item>
-        <item>ブラウザでログイン</item>
-        <item>PINコードでログイン</item>
+        <!-- <item>ブラウザでログイン</item>
+        <item>PINコードでログイン</item> -->
     </string-array>
     <string-array name="titles_timeline">
         <item>パブリック</item>

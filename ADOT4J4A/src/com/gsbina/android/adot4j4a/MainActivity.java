@@ -113,13 +113,13 @@ public class MainActivity extends FragmentActivity {
             Intent intent = new Intent(getActivity(), DetailsActivity.class);
             switch (index) {
                 case Twitter4JApis.LOGIN:
-                    intent.setAction(DetailsActivity.ACTION_LOGIN);
+                    intent.setAction(Login.ACTION_LOGIN);
                     break;
                 case Twitter4JApis.TIMELINE:
-                    intent.setAction(DetailsActivity.ACTION_TIMELINE);
+                    intent.setAction(Timeline.ACTION_TIMELINE);
                     break;
                 case Twitter4JApis.TWEET:
-                    intent.setAction(DetailsActivity.ACTION_TWEET);
+                    intent.setAction(Tweet.ACTION_TWEET);
                     break;
                 default:
                     return null;
