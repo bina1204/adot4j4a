@@ -49,6 +49,14 @@ public class Login {
     public static final int FROM_BROWSER = FROM_WEB_VIEW + 1;
     public static final int FROM_PIN_CODE = FROM_BROWSER + 1;
 
+    public static Fragment getDetailsFragmentByAction(String action) {
+        if (ACTION_LOGIN_FROM_WEBVIEW.equals(action)) {
+            return new Login.FromWebView();
+        } else {
+            return new Login.SelectMenu();
+        }
+    }
+
     public static class SelectMenu extends DetailsList {
 
         @Override

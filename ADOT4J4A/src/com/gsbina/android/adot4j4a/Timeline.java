@@ -47,6 +47,31 @@ public class Timeline {
     public static final int RETWEET_TO_USER_LINE = RETWEET_OF_ME_LINE + 1;
     public static final int RETWEET_BY_USER_LINE = RETWEET_TO_USER_LINE + 1;
 
+    public static Fragment getDetailsFragmentByAction(String action) {
+        if (Timeline.ACTION_TIMELINE_PUBLIC.equals(action)) {
+            return new Timeline.Public();
+        } else if (Timeline.ACTION_TIMELINE_HOME.equals(action)) {
+            return new Timeline.Home();
+        } else if (Timeline.ACTION_TIMELINE_USER.equals(action)) {
+            return new Timeline.User();
+        } else if (Timeline.ACTION_TIMELINE_MENTIONS.equals(action)) {
+            return new Timeline.Mentions();
+        } else if (Timeline.ACTION_TIMELINE_RETWEET_BY_ME.equals(action)) {
+            return new Timeline.RetweetByMe();
+        } else if (Timeline.ACTION_TIMELINE_RETWEET_OF_ME.equals(action)) {
+            return new Timeline.RetweetOfMe();
+        } else if (Timeline.ACTION_TIMELINE_RETWEET_TO_ME.equals(action)) {
+            return new Timeline.RetweetToMe();
+        } else if (Timeline.ACTION_TIMELINE_RETWEET_TO_USER.equals(action)) {
+            return new Timeline.RetweetToUser();
+        } else if (Timeline.ACTION_TIMELINE_RETWEET_BY_USER.equals(action)) {
+            return new Timeline.RetweetByUser();
+        } else {
+            return new Timeline.SelectMenu();
+        }
+
+    }
+
     public static class SelectMenu extends DetailsList {
 
         private boolean mHasAccount = false;

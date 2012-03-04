@@ -47,6 +47,22 @@ public class Tweet {
     public static final int CREATE_FAVORITE = FAVORITES + 1;
     public static final int DESTROY_FAVORITE = CREATE_FAVORITE + 1;
 
+    public static Fragment getDetailsFragmentByAction(String action) {
+        if (Tweet.ACTION_TWEET_UPDATE.equals(action)) {
+            return new Tweet.UpdateStatus();
+        } else if (Tweet.ACTION_TWEET_DESTROY.equals(action)) {
+            return new Tweet.DestroyStatus();
+        } else if (Tweet.ACTION_TWEET_RETWEET.equals(action)) {
+            return new Tweet.RetweetStatus();
+        } else if (Tweet.ACTION_TWEET_GET_RETWEETS.equals(action)) {
+            return new Tweet.GetRetweetStatus();
+        } else if (Tweet.ACTION_TWEET_FAVORITES.equals(action)) {
+            return new Tweet.Favorites();
+        } else {
+            return new Tweet.SelectMenu();
+        }
+    }
+
     public static class SelectMenu extends DetailsList {
 
         private boolean mHasAccount = false;
